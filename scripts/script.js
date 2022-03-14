@@ -1,44 +1,50 @@
 'use-strict';
 
-const mainBlock = document.querySelector('.square-body');
-const block = document.querySelectorAll('.block');
-const number = document.querySelector('.block-number');
-let arr = [];
+const blocksWrapper = document.querySelector('.square-body');
+let blocksCollection = document.querySelectorAll('.block');
+let blocks = Array.from(document.querySelectorAll('.block'));
 
-mainBlock.addEventListener('click', (e) => {
-	for (let i = 0; i < block.length; i++) {
-		arr.push(block[i]);
-		// 	block[i].addEventListener('click', (e) => {
-		// 		console.log(arr.indexOf(e.target));
-		// 	});
-		// console.log(i);
+const moveUp = (elem, pos) => {
+	let index = blocks.indexOf(elem) + pos;
+
+	if (index >= 0) {
+		blocks[index].before(elem);
+		blocks = Array.from(document.querySelectorAll('.block'));
+		blocks[index + 5].after(blocks[index + 1])
 	}
-	// console.log(arr.indexOf(e.target.closest('.block')));
-	// console.log(block.length);
-	let elemIndex = arr.indexOf(e.target.closest('.block'));
-	elemIndex += 1;
-	console.log(elemIndex);
-	const thisBlock = e.target.closest('.block');
-	const nextBlock = e.target.closest('.block').nextElementSibling;
-	const previousBlock = e.target.closest('.block').previousElementSibling;
-	const thisNumber = e.target.closest('.block').querySelector('.block-number');
-	if (e.target.closest('.right')) {
-		elemIndex += 1;
-		console.log(arr);
+}
+const moveDown = (elem, pos) => {
+	let index = blocks.indexOf(elem) + pos;
 
-		// thisNumber.textContent = elemIndex += 1;
-		// nextNumber.textContent = thisNumber.textContent - 1;
-		// nextBlock.after(thisBlock);
-		// console.log(thisBlock);
-		// console.log(nextBlock);
-		// console.log(thisNumber.textContent);
-
-		// console.log(block.findIndex(i => i == thisBlock));
-	} else if (e.target.closest('.left')) {
-		previousBlock.before(thisBlock);
-	} else if (e.target.closest('.top')) {
-		console.log('up');
-	} else if (e.target.closest('.bottom')) {
-		console.log('down');
+	if (index < blocks.length) {
+		blocks[index].after(elem);
+		blocks = Array.from(document.querySelectorAll('.block'));
+		blocks[index - pos].before(blocks[index - 1]);
 	}
+}
+
+const moveLeft = (elem, pos) => {
+	let index = blocks.indexOf(elem) + pos;
+	if (index >= 0) blocks[index].before(elem);
+};
+
+const moveRight = (elem, pos) => {
+	let index = blocks.indexOf(elem) + pos;
+	if (index < blocks.length) blocks[index].after(elem);
+};
+
+const resetBlocks = () => {
+	blocksWrapper.innerHTML = '';
+	blocksCollection.forEach((item) => {
+		blocksWrapper.append(item)
+	});
+};
+
+document.body.addEventListener('click', (e) => {
+	if (e.target.closest('.top')) moveUp(e.target.closest('.block'), -5);
+	else if (e.target.closest('.bottom')) moveDown(e.target.closest('.block'), 5);
+	else if (e.target.closest('.right')) moveRight(e.target.closest('.block'), 1);
+	else if (e.target.closest('.left')) moveLeft(e.target.closest('.block'), -1);
+	else if (e.target.matches('button')) resetBlocks();
+	blocks = Array.from(document.querySelectorAll('.block'));
 });
